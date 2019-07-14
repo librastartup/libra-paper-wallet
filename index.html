@@ -1,0 +1,151 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie= edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Libra Paper Wallet - Generate and Print New Libra Address, its QR Code & Mnemonic Seed Words</title>
+
+    <script src="./index.js"></script>
+    <script src="./lib/qrcode.js"></script>
+
+    <style>
+      body {
+        background-color: #f5f5f5;
+        padding-bottom: 60px;
+        padding-top: 20px;
+      }
+
+      #lpw-qr {
+        max-width: 50px;
+      }
+
+      #lpw-container {
+        border: 1px solid #999999;
+        overflow: auto;
+        /* padding: 15px 10px 30px 10px; */
+        padding: 15px;
+        display: none;
+        margin-top: 20px;
+        background-color: white;
+      }
+
+      #lpw-print-container {
+        display: none;
+      }
+
+      #lpw-address {
+        word-wrap: break-word;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      button {
+        padding: 5px 10px 5px 10px;
+      }
+    </style>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-57930548-40"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-57930548-40');
+    </script>
+
+  </head>
+
+  <body>
+    <div class="container">
+      
+      <h1>Libra Paper Wallet</h1>
+
+      Generate a new Libra cryptocurrency wallet address, its QR code, and the recovery seed - 12 mnemonic words.
+      <br><br>
+      The wallet generation is done on the client-side. It means that your recovery words are not sent to (or received from) the internet. They are visible to you only, and only in the device (computer, mobile...) that you are currently using. If not copied or printed, after the page refresh, your newly generated wallet details will disappear.
+      <br><br>
+      Your address is public. The QR Code is the same public address, readable by QR scanners. You can send or receive money from or to a public address.
+      <br><br>
+      Your 12 mnemonic words are secret. The one who has access to these seed words has the access to the wallet funds. So keep them safe, and also don't lose them, because the seed words are not recoverable.
+      <br><br>
+      Libra Paper Wallet is <a href="https://github.com/giekaton/libra-paper-wallet" target="_blank">open source</a>.
+      <br><br>
+      <button id="generate-btn">New</button>
+      <br><br>
+
+      <div id="lpw-container">
+        <div id="lpw-address"></div>
+        <br>
+        <div id="lpw-qr-title"></div>
+        <div id="lpw-qr"></div>
+        <br>
+        <div id="lpw-secret"></div>
+      </div>
+
+      <div id="lpw-print-container">
+        <br>
+        <button onclick="window.print()">Print</button>
+        
+        <!-- <button>Save .PDF</button> <button>Save .PNG</button> <button>Save .TXT</button> -->
+      </div>
+      
+      <br>
+      <br>
+      <br>
+      <br>
+      <hr>
+      <span style="float:left;">≋ Libra Paper Wallet v0.1-beta</span>
+
+    </div>
+
+  </body>
+
+
+  <script>
+    document.getElementById('generate-btn').onclick = function (e) {
+      document.getElementById('lpw-container').style.display = "block";
+      document.getElementById('lpw-print-container').style.display = "block";
+
+      lpwAddress = document.getElementById('lpw-address');
+      lpwSecret = document.getElementById('lpw-secret');
+      lpwQr = document.getElementById('lpw-qr');
+
+      // Create a new random wallet
+      const wallet1 = LibraWallet.create()
+      
+      let seedArray = wallet1.getMnemonic();
+      let seedString = "";
+
+      seedArray.forEach (function(word) {
+        seedString += word + " ";
+      });
+
+      lpwSecret.innerHTML = 'Seed:<br>'+seedString;
+
+      const account1 = wallet1.getAccount(0);
+      address = account1.getAddress().toHex();
+
+      lpwAddress.innerHTML = 'Address: <br>'+address;
+
+      // generate qr code
+      lpwQr.innerHTML = '';
+
+      new QRCode(lpwQr, {
+        text: address,
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      document.getElementById('lpw-qr-title').innerHTML = 'QR Code:';
+    }
+  </script>
+
+</html>
